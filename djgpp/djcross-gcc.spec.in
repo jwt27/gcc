@@ -420,6 +420,9 @@ rm -fr %{buildroot}
 %endif
 
 %changelog
+* Thu Apr  4 2013 Andris Pavenis <andris.pavenis@iki.fi>
+- Update for GCC trunk
+
 * Sun Jul 22 2012 Andris Pavenis <andris.pavenis@iki.fi>
 - Add support from building from GCC snapshots
 
