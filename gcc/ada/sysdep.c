@@ -156,6 +156,30 @@ __gnat_set_text_mode (int handle)
   WIN_SETMODE (handle, O_TEXT);
 }
 
+#ifdef __DJGPP__
+void
+__gnat_set_mode (int handle, int mode)
+{
+  /*  the values here must be synchronized with
+      System.File_Control_Block.Content_Encodding:
+
+      None         = 0
+      Default_Text = 1
+      Text         = 2
+      U8text       = 3
+      Wtext        = 4
+      U16text      = 5  */
+
+ switch (mode) {
+    case 0 : setmode(handle, O_BINARY);          break;
+    case 1 : setmode(handle, O_TEXT);            break;
+    case 2 : setmode(handle, O_TEXT);            break;
+    case 3 : setmode(handle, O_TEXT);            break;
+    case 4 : setmode(handle, O_TEXT);            break;
+    case 5 : setmode(handle, O_TEXT);            break;
+ }
+}
+#else
 void
 __gnat_set_mode (int handle, int mode)
 {
@@ -178,6 +202,7 @@ __gnat_set_mode (int handle, int mode)
     case 5 : WIN_SETMODE (handle, _O_U16TEXT);         break;
  }
 }
+#endif
 
 #ifdef __CYGWIN__
 
