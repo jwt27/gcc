@@ -175,8 +175,8 @@ __gnat_set_mode (int handle, int mode)
     case 1 : setmode(handle, O_TEXT);            break;
     case 2 : setmode(handle, O_TEXT);            break;
     case 3 : setmode(handle, O_TEXT);            break;
-    case 4 : setmode(handle, O_TEXT);            break;
-    case 5 : setmode(handle, O_TEXT);            break;
+    case 4 : setmode(handle, O_BINARY);          break;
+    case 5 : setmode(handle, O_BINARY);          break;
  }
 }
 #else
