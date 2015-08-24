@@ -119,7 +119,10 @@ my @cpp_rename = (
 "unordered_map:unordmap",
 "unordered_set:unordset",
 "unordered_map:unordmap",
-"unordered_set:unordset"
+"unordered_set:unordset",
+
+"experimental/unordered_map:unordmap",
+"experimental/unordered_set:unordset",
 );
 
 my @c_inc_rename = (
