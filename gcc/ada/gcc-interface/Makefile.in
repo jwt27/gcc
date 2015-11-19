@@ -1737,6 +1737,7 @@ ifeq ($(strip $(filter-out %djgpp,$(target_os))),)
 	s-os_lib.adb<s-os_lib-djgpp.adb \
 	$(DUMMY_SOCKETS_TARGET_PAIRS)
 
+  EH_MECHANISM=-gcc
 endif
 
 # Cygwin/Mingw32
