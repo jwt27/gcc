@@ -12,13 +12,15 @@
 export PATH=$(pwd)/../tmpinst/bin:$PATH
 export LD_LIBRARY_PATH=$(pwd)/../tmpinst/lib64
 
+export ac_cv_c_bigendian=no
+
 gcc -v 
 i586-pc-msdosdjgpp-gcc -v
 
 
 target=i586-pc-msdosdjgpp
 
-../gnu/gcc-6.00-20151211/configure \
+../gnu/gcc-@SRCDIR@/configure \
     --prefix=/dev/env/DJDIR \
     --build=i586-pc-linux-gnu \
     --host=i586-pc-msdosdjgpp \
@@ -29,4 +31,4 @@ target=i586-pc-msdosdjgpp
     --enable-lto \
     --enable-nls || exit 1
 
-make -j12 | exit 1
+make -j1 || exit 1
