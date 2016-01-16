@@ -1,5 +1,5 @@
 /* Configuration for GCC for Intel 80386 running DJGPP.
-   Copyright (C) 1988-2015 Free Software Foundation, Inc.
+   Copyright (C) 1988-2016 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
@@ -26,11 +26,11 @@ along with GCC; see the file COPYING3.  If not see
 /* We override default /usr or /usr/local part with /dev/env/DJDIR which */
 /* points to actual DJGPP installation directory.  */
 
-/* Standard include directory */
+/* Native system include directory */
 #undef NATIVE_SYSTEM_HEADER_DIR
 #define NATIVE_SYSTEM_HEADER_DIR "/dev/env/DJDIR/include/"
 
-#undef PREFIX_INCLUDE_DIR
+//#undef PREFIX_INCLUDE_DIR
 
 /* Search for as.exe and ld.exe in DJGPP's binary directory.  */ 
 #undef MD_EXEC_PREFIX
@@ -84,12 +84,12 @@ along with GCC; see the file COPYING3.  If not see
            to try and figure out what's wrong.  */ \
         char *djgpp = getenv ("DJGPP"); \
         if (djgpp == NULL) \
-          fatal_error ("environment variable DJGPP not defined"); \
+          fatal_error (UNKNOWN_LOCATION, "environment variable DJGPP not defined"); \
         else if (access (djgpp, R_OK) == 0) \
-          fatal_error ("environment variable DJGPP points to missing file '%s'", \
+          fatal_error (UNKNOWN_LOCATION, "environment variable DJGPP points to missing file '%s'", \
                  djgpp); \
         else \
-          fatal_error ("environment variable DJGPP points to corrupt file '%s'", \
+          fatal_error (UNKNOWN_LOCATION, "environment variable DJGPP points to corrupt file '%s'", \
                   djgpp); \
       } \
   } while (0)
@@ -114,9 +114,9 @@ along with GCC; see the file COPYING3.  If not see
 #define LIBSTDCXX_PROFILE "stdcxx"
 #define LIBSTDCXX_STATIC "stdcxx"
 
-/* Definition is missing in DJGPP headers. That broke building
-   GNU Fortran compiler in GCC-4.1 */
-typedef unsigned int uint;
-
 #undef MAX_OFILE_ALIGNMENT
 #define MAX_OFILE_ALIGNMENT 128
+
+/* DJGPP versions up to current (2.05) have ftw.h but only ftw() not nftw().
+   Disable use of ftw.h */
+#undef HAVE_FTW_H
