@@ -2187,7 +2187,6 @@ scan_sharing_clauses (tree clauses, omp_context *ctx,
 	case OMP_CLAUSE_GANG:
 	case OMP_CLAUSE_WORKER:
 	case OMP_CLAUSE_VECTOR:
-	case OMP_CLAUSE_TILE:
 	case OMP_CLAUSE_INDEPENDENT:
 	case OMP_CLAUSE_AUTO:
 	case OMP_CLAUSE_SEQ:
@@ -2200,11 +2199,8 @@ scan_sharing_clauses (tree clauses, omp_context *ctx,
 	    install_var_local (decl, ctx);
 	  break;
 
-	case OMP_CLAUSE_DEVICE_RESIDENT:
+	case OMP_CLAUSE_TILE:
 	case OMP_CLAUSE__CACHE_:
-	  sorry ("Clause not supported yet");
-	  break;
-
 	default:
 	  gcc_unreachable ();
 	}
@@ -2361,18 +2357,14 @@ scan_sharing_clauses (tree clauses, omp_context *ctx,
 	case OMP_CLAUSE_GANG:
 	case OMP_CLAUSE_WORKER:
 	case OMP_CLAUSE_VECTOR:
-	case OMP_CLAUSE_TILE:
 	case OMP_CLAUSE_INDEPENDENT:
 	case OMP_CLAUSE_AUTO:
 	case OMP_CLAUSE_SEQ:
 	case OMP_CLAUSE__GRIDDIM_:
 	  break;
 
-	case OMP_CLAUSE_DEVICE_RESIDENT:
+	case OMP_CLAUSE_TILE:
 	case OMP_CLAUSE__CACHE_:
-	  sorry ("Clause not supported yet");
-	  break;
-
 	default:
 	  gcc_unreachable ();
 	}
@@ -13681,6 +13673,9 @@ grid_expand_target_grid_body (struct omp_region *target)
   tree new_parm_decl = copy_node (DECL_ARGUMENTS (kern_fndecl));
   DECL_CONTEXT (new_parm_decl) = kern_fndecl;
   DECL_ARGUMENTS (kern_fndecl) = new_parm_decl;
+  gcc_assert (VOID_TYPE_P (TREE_TYPE (DECL_RESULT (kern_fndecl))));
+  DECL_RESULT (kern_fndecl) = copy_node (DECL_RESULT (kern_fndecl));
+  DECL_CONTEXT (DECL_RESULT (kern_fndecl)) = kern_fndecl;
   struct function *kern_cfun = DECL_STRUCT_FUNCTION (kern_fndecl);
   kern_cfun->curr_properties = cfun->curr_properties;
 
