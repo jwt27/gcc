@@ -615,9 +615,7 @@ __gnat_get_default_identifier_character_set (void)
 void
 __gnat_get_current_dir (char *dir, int *length)
 {
-#ifdef __DJGPP__
-  int i;
-#elif defined (__MINGW32__)
+#if defined (__MINGW32__)
   TCHAR wdir[GNAT_MAX_PATH_LEN];
 
   _tgetcwd (wdir, *length);
@@ -629,14 +627,6 @@ __gnat_get_current_dir (char *dir, int *length)
 #endif
 
    *length = strlen (dir);
-
-#if __DJGPP__
-   for (i = 0; i < *length; i++)
-     {
-       if (dir[i] == '/')
-	 dir[i] = '\\';
-     }
-#endif
 
    if (dir [*length - 1] != DIR_SEPARATOR)
      {
