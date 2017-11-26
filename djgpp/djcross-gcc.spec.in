@@ -365,6 +365,7 @@ rm -fr %{buildroot}
 %{_libdir}/gcc/%{target}/%{gcc_version}/libssp_nonshared.*
 %{_libdir}/gcc/%{target}/%{gcc_version}/include/ssp/*.h
 %{_libdir}/gcc/%{target}/%{gcc_version}/include/*intrin*.h
+%{_libdir}/gcc/%{target}/%{gcc_version}/include/cet.h
 %{_libdir}/gcc/%{target}/%{gcc_version}/include/cpuid.h
 %{_libdir}/gcc/%{target}/%{gcc_version}/include/cross-stdarg.h
 %{_libdir}/gcc/%{target}/%{gcc_version}/include/float.h
