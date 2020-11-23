@@ -907,6 +907,8 @@ make_edges_bb (basic_block bb, struct omp_region **pcur_region, int *pomp_index)
       break;
 
     case GIMPLE_ASM:
+      if (stmt_can_throw_internal (cfun, last))
+	make_eh_edges (last);
       make_gimple_asm_edges (bb);
       fallthru = true;
       break;

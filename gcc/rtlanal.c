@@ -2844,12 +2844,10 @@ may_trap_p_1 (const_rtx x, unsigned flags)
       return targetm.unspec_may_trap_p (x, flags);
 
     case UNSPEC_VOLATILE:
+    case ASM_OPERANDS:
     case ASM_INPUT:
     case TRAP_IF:
       return 1;
-
-    case ASM_OPERANDS:
-      return MEM_VOLATILE_P (x);
 
       /* Memory ref can trap unless it's a static var or a stack slot.  */
     case MEM:

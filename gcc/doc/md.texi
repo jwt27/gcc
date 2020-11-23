@@ -1607,6 +1607,9 @@ Here are constraint modifier characters.
 Means that this operand is written to by this instruction:
 the previous value is discarded and replaced by new data.
 
+The value of an operand with this modifier is undefined if the instruction
+does not write to it, eg. on the exception or jump path.
+
 @cindex @samp{+} in constraint
 @item +
 Means that this operand is both read and written by the instruction.
@@ -1617,8 +1620,23 @@ which are written by it.  @samp{=} identifies an operand which is only
 written; @samp{+} identifies an operand that is both read and written; all
 other operands are assumed to only be read.
 
-If you specify @samp{=} or @samp{+} in a constraint, you put it in the
-first character of the constraint string.
+The @samp{+} modifier also implies that the output remains valid when an
+exception is thrown; it retains its previous value if the instruction does
+not write to it.
+
+@cindex @samp{-} in constraint
+@item -
+Like @samp{=}, means that this operand is written by the instruction, and
+additionally specifies that it must be considered clobbered when an exception
+is thrown, or the instruction branches.  The compiler assigns the output via a
+temporary variable, which is only used on the fallthrough path.  This is
+generally only possible for operands that fit in a register.
+
+The @samp{-} modifier is implemented only for @code{asm} statements and is
+invalid for other instructions.
+
+If you specify @samp{=}, @samp{+} or @samp{-} in a constraint, you put it in
+the first character of the constraint string.
 
 @cindex @samp{&} in constraint
 @cindex earlyclobber operand
@@ -1643,8 +1661,8 @@ earlyclobber. See, for example, the @samp{mulsi3} insn of the ARM@.
 Furthermore, if the @dfn{earlyclobber} operand is also a read/write
 operand, then that operand is written only after it's used.
 
-@samp{&} does not obviate the need to write @samp{=} or @samp{+}.  As
-@dfn{earlyclobber} operands are always written, a read-only
+@samp{&} does not obviate the need to write @samp{=}, @samp{+} or @samp{-}.
+As @dfn{earlyclobber} operands are always written, a read-only
 @dfn{earlyclobber} operand is ill-formed and will be rejected by the
 compiler.
 

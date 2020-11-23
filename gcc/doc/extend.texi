@@ -10009,6 +10009,15 @@ ensures that modifying @var{a} does not affect the address referenced by
 @var{b}. Otherwise, the location of @var{b} 
 is undefined if @var{a} is modified before using @var{b}.
 
+If the @code{asm} throws an exception (which is possible when
+@option{-fnon-call-exceptions} are enabled) or jumps to a goto label, the
+operand's validity is determined by the constraint modifier used.  For example,
+the @samp{-} modifier may be used to specify that the output must be considered
+clobbered on the exception or jump paths.  If an operand is not always written
+to, but must remain valid on all code paths, the @samp{+} modifier should be
+used to prevent earlier assignments from being optimized away.  See
+@pxref{Modifiers} for details.
+
 @code{asm} supports operand modifiers on operands (for example @samp{%k2} 
 instead of simply @samp{%2}). Typically these qualifiers are hardware 
 dependent. The list of supported modifiers for x86 is found at 

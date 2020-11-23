@@ -2069,6 +2069,9 @@ lower_eh_constructs_2 (struct leh_state *state, gimple_stmt_iterator *gsi)
 	  gimple_set_lhs (stmt, tmp);
 	  gsi_insert_after (gsi, s, GSI_SAME_STMT);
 	}
+
+      /* FALLTHRU */
+    case GIMPLE_ASM:
       /* Look for things that can throw exceptions, and record them.  */
       if (state->cur_region && stmt_could_throw_p (cfun, stmt))
 	{
@@ -2720,7 +2723,7 @@ tree_could_trap_p (tree expr)
       return !TREE_THIS_NOTRAP (expr);
 
     case ASM_EXPR:
-      return TREE_THIS_VOLATILE (expr);
+      return true;
 
     case CALL_EXPR:
       t = get_callee_fndecl (expr);
@@ -2924,7 +2927,7 @@ stmt_could_throw_p (function *fun, gimple *stmt)
     case GIMPLE_ASM:
       if (fun && !fun->can_throw_non_call_exceptions)
         return false;
-      return gimple_asm_volatile_p (as_a <gasm *> (stmt));
+      return true;
 
     default:
       return false;

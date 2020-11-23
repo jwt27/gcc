@@ -6329,10 +6329,38 @@ gimplify_asm_expr (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p)
 	  ret = tret;
 	}
 
+      /* Outputs constrained with '-' are assigned via a temporary
+	 so that they are not used on the exception or goto paths.  */
+      if (constraint[0] == '-')
+	{
+	  /* Turn it into a regular '=' constraint, since other
+	     parts of gcc do not recognize the '-' modifier.  */
+	  char *p = xstrdup (constraint);
+	  p[0] = '=';
+	  TREE_VALUE (TREE_PURPOSE (link)) = build_string (constraint_len, p);
+
+	  tree op = TREE_VALUE (link);
+	  if (! tree_could_throw_p (op)
+	      && is_gimple_reg_type (TREE_TYPE (op)))
+	    {
+	      tree tmp = create_tmp_reg (TREE_TYPE (op));
+	      tree assign = build2 (MODIFY_EXPR, TREE_TYPE (tmp), op, tmp);
+	      gimplify_and_add (assign, post_p);
+	      TREE_VALUE (link) = tmp;
+	    }
+	  else
+	    {
+	      error_at (EXPR_LOC_OR_LOC (op, input_location),
+			"cannot make temporary for operand %d"
+			" constrained with %<-%>",
+			i);
+	      ret = GS_ERROR;
+	    }
+	}
       /* If the constraint does not allow memory make sure we gimplify
-         it to a register if it is not already but its base is.  This
+	 it to a register if it is not already but its base is.  This
 	 happens for complex and vector components.  */
-      if (!allows_mem)
+      else if (!allows_mem)
 	{
 	  tree op = TREE_VALUE (link);
 	  if (! is_gimple_val (op)
@@ -6352,6 +6380,15 @@ gimplify_asm_expr (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p)
 
 	      TREE_VALUE (link) = tem;
 	      tret = GS_OK;
+
+	      /* If a copy must be made here, and the asm can alter control
+		 flow, emit a warning now.  The user must specify '-' in
+		 this case.  */
+	      if (cfun->can_throw_non_call_exceptions
+		  || ASM_LABELS (expr) != NULL)
+		warning_at (EXPR_LOC_OR_LOC (op, input_location), 0,
+			    "output %d is only valid on fallthrough path"
+			    " (use %<-%> constraint to suppress)", i);
 	    }
 	}
 

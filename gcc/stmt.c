@@ -207,6 +207,8 @@ parse_output_constraint (const char **constraint_p, int operand_num,
   p = strchr (constraint, '=');
   if (!p)
     p = strchr (constraint, '+');
+  if (!p)
+    p = strchr (constraint, '-');
 
   /* If the string doesn't contain an `=', issue an error
      message.  */
@@ -220,8 +222,9 @@ parse_output_constraint (const char **constraint_p, int operand_num,
      from and written to.  */
   *is_inout = (*p == '+');
 
-  /* Canonicalize the output constraint so that it begins with `='.  */
-  if (p != constraint || *is_inout)
+  /* Canonicalize the output constraint so that it begins with the
+     modifier character.  */
+  if (p != constraint)
     {
       char *buf;
       size_t c_len = strlen (constraint);
@@ -236,9 +239,7 @@ parse_output_constraint (const char **constraint_p, int operand_num,
       strcpy (buf, constraint);
       /* Swap the first character and the `=' or `+'.  */
       buf[p - constraint] = buf[0];
-      /* Make sure the first character is an `='.  (Until we do this,
-	 it might be a `+'.)  */
-      buf[0] = '=';
+      buf[0] = *p;
       /* Replace the constraint with the canonicalized string.  */
       *constraint_p = ggc_alloc_string (buf, c_len);
       constraint = *constraint_p;
@@ -251,8 +252,9 @@ parse_output_constraint (const char **constraint_p, int operand_num,
 	{
 	case '+':
 	case '=':
+	case '-':
 	  error ("operand constraint contains incorrectly positioned "
-		 "%<+%> or %<=%>");
+		 "%<+%>, %<=%> or %<-%>");
 	  return false;
 
 	case '%':
@@ -335,7 +337,7 @@ parse_input_constraint (const char **constraint_p, int input_num,
   for (j = 0; j < c_len; j += CONSTRAINT_LEN (constraint[j], constraint+j))
     switch (constraint[j])
       {
-      case '+':  case '=':  case '&':
+      case '-': case '+':  case '=':  case '&':
 	if (constraint == orig_constraint)
 	  {
 	    error ("input operand constraint contains %qc", constraint[j]);
